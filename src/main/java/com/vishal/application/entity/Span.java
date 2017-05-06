@@ -9,5 +9,5 @@ public class Span {
     private DateTime end;
     private String service;
     private String callerSpan;
-    private String span;
+    private String spanId;
 }
