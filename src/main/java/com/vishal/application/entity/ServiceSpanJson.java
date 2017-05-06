@@ -1,7 +1,9 @@
-package com.vishal.application.entity
+package com.vishal.application.entity;
 
-import lombok.Value
-import org.joda.time.DateTime
+import lombok.Value;
+import org.joda.time.DateTime;
+
+import java.util.List;
 
 @Value
 public class ServiceSpanJson {

@@ -1,7 +1,6 @@
 package com.vishal.application
 
 import com.vishal.application.entity.LogLine
-import com.vishal.application.entity.ServiceSpanJson
 import com.vishal.application.entity.Span
 import com.vishal.application.parsers.TraceLogLineParser
 import org.joda.time.DateTime
@@ -50,7 +49,7 @@ class FileReadingServiceTest extends Specification {
                 .thenReturn(new LogLine("traceId", new Span(DateTime.now(), DateTime.now().plusMillis(10000), "service", "caller-span", "span")))
 
         when:
-        List<ServiceSpanJson> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
+        List<LogLine> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
 
         then:
         fileContent.isEmpty() == false
