@@ -22,17 +22,44 @@ class FileReadingServiceTest extends Specification {
         filePath = classLoader.getResource("small-log.txt").getFile()
     }
 
-    def "test should be able to return non null file content"() {
+    def "should return list of log line trace jsons"() {
+        given:
+        String twoLogLinesFilePath = classLoader.getResource("two-log-lines.txt").getFile()
+        Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.298Z 2013-10-23T10:12:35.300Z eckakaau service3 d6m3shqy->62d45qeh"))
+                .thenReturn(new LogLine("eckakaau", new Span(new DateTime("2013-10-23T10:12:35.298Z"), new DateTime("2013-10-23T10:12:35.300Z"), "service3", "d6m3shqy", "62d45qeh")))
+        Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.293Z 2013-10-23T10:12:35.302Z eckakaau service7 zfjlsiev->d6m3shqy"))
+                .thenReturn(new LogLine("eckakaau", new Span(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service7", "zfjlsiev", "d6m3shqy")))
 
         when:
-        def fileContent = fileReadingService.readFile(filePath);
+        Map<String, List<Span>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
 
         then:
-        fileContent != null
-
+        fileContent.isEmpty() == false
+        fileContent.size() == 1
+        fileContent.get("eckakaau").size() == 2
     }
 
-    def "test should throw exception if file does not exist"() {
+    def "should be able to create map of different trace Ids"() {
+        given:
+        String twoLogLinesFilePath = classLoader.getResource("three-log-lines.txt").getFile()
+        Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.298Z 2013-10-23T10:12:35.300Z eckakaau service3 d6m3shqy->62d45qeh"))
+                .thenReturn(new LogLine("eckakaau", new Span(new DateTime("2013-10-23T10:12:35.298Z"), new DateTime("2013-10-23T10:12:35.300Z"), "service3", "d6m3shqy", "62d45qeh")))
+        Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.293Z 2013-10-23T10:12:35.302Z eckakaau service7 zfjlsiev->d6m3shqy"))
+                .thenReturn(new LogLine("eckakaau", new Span(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service7", "zfjlsiev", "d6m3shqy")))
+        Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.293Z 2013-10-23T10:12:35.302Z abcdef service10 iojlsitb->hjm3shfd"))
+                .thenReturn(new LogLine("abcdef", new Span(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service10", "iojlsitb", "hjm3shfd")))
+
+        when:
+        Map<String, List<Span>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
+
+        then:
+        fileContent.isEmpty() == false
+        fileContent.size() == 2
+        fileContent.get("eckakaau").size() == 2
+        fileContent.get("abcdef").size() == 1
+    }
+
+    def "should throw exception if file does not exist"() {
 
         when:
         fileReadingService.readFile(filePath + "/garbage/path");
@@ -40,19 +67,5 @@ class FileReadingServiceTest extends Specification {
         then:
         thrown IOException
 
-    }
-
-    def "test should return list of log line trace jsons"() {
-        given:
-        String twoLogLinesFilePath = classLoader.getResource("two-log-lines.txt").getFile()
-        Mockito.when(mockTraceLogLineParser.parse(Mockito.anyString()))
-                .thenReturn(new LogLine("traceId", new Span(DateTime.now(), DateTime.now().plusMillis(10000), "service", "caller-span", "span")))
-
-        when:
-        List<LogLine> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
-
-        then:
-        fileContent.isEmpty() == false
-        fileContent.size() == 2
     }
 }

@@ -6,4 +6,5 @@ import lombok.Value;
 public class LogLine {
     private String trace;
     private Span span;
+
 }

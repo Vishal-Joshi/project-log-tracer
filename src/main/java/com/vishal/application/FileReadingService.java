@@ -1,6 +1,7 @@
 package com.vishal.application;
 
 import com.vishal.application.entity.LogLine;
+import com.vishal.application.entity.Span;
 import com.vishal.application.parsers.TraceLogLineParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,11 +28,20 @@ public class FileReadingService {
         this.logLineParser = traceLogLineParser;
     }
 
-    public List<LogLine> readFile(String filePath) throws IOException {
+    public Map<String, List<Span>> readFile(String filePath) throws IOException {
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            return stream
-                    .map(logLineParser::parse)
-                    .collect(Collectors.toList());
+            HashMap<String, List<Span>> mapOfTraceAndSpans = new HashMap<>();
+            List<LogLine> logLineList = stream.map(logLineParser::parse).collect(Collectors.toList());
+            logLineList.forEach(logLineObject -> {
+                if (mapOfTraceAndSpans.containsKey(logLineObject.getTrace())) {
+                    mapOfTraceAndSpans.get(logLineObject.getTrace()).add(logLineObject.getSpan());
+                } else {
+                    List<Span> spanList = new ArrayList<>();
+                    spanList.add(logLineObject.getSpan());
+                    mapOfTraceAndSpans.put(logLineObject.getTrace(), spanList);
+                }
+            });
+            return mapOfTraceAndSpans;
         } catch (IOException iOException) {
             log.error("IOException occurred", iOException);
             throw iOException;
