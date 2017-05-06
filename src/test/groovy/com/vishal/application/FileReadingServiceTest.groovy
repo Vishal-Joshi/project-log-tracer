@@ -34,9 +34,9 @@ class FileReadingServiceTest extends Specification {
         Map<String, List<Span>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
 
         then:
-        fileContent.isEmpty() == false
-        fileContent.size() == 1
-        fileContent.get("eckakaau").size() == 2
+        !fileContent.isEmpty()
+        1 == fileContent.size()
+        2 == fileContent.get("eckakaau").size()
     }
 
     def "should be able to create map of different trace Ids"() {
@@ -53,10 +53,10 @@ class FileReadingServiceTest extends Specification {
         Map<String, List<Span>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
 
         then:
-        fileContent.isEmpty() == false
-        fileContent.size() == 2
-        fileContent.get("eckakaau").size() == 2
-        fileContent.get("abcdef").size() == 1
+        !fileContent.isEmpty()
+        2 == fileContent.size()
+        2 == fileContent.get("eckakaau").size()
+        1 == fileContent.get("abcdef").size()
     }
 
     def "should throw exception if file does not exist"() {
