@@ -3,7 +3,7 @@ package com.vishal.application.entity;
 import lombok.Value;
 
 @Value
-public class TraceJson {
+public class Trace {
     private String trace;
-    private ServiceSpanJson root;
+    private Span root;
 }

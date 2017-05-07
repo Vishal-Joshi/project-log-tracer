@@ -1,10 +1,14 @@
 package com.vishal.application.entity;
 
-import lombok.Value;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Value
+@Getter
+@Setter
+@Builder
 public class LogLine {
     private String trace;
-    private Span span;
+    private TraceLogInfo traceLogInfo;
 
 }

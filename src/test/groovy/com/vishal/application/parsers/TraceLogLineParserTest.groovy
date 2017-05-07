@@ -18,10 +18,10 @@ class TraceLogLineParserTest extends Specification {
         then:
         parsedLogLine != null
         "eckakaau" == parsedLogLine.trace
-        null != parsedLogLine.span
-        new DateTime("2013-10-23T10:12:35.293Z") == parsedLogLine.span.start
-        new DateTime("2013-10-23T10:12:35.302Z") == parsedLogLine.span.end
-        "zfjlsiev" == parsedLogLine.span.callerSpan
-        "d6m3shqy" == parsedLogLine.span.spanId
+        null != parsedLogLine.traceLogInfo
+        new DateTime("2013-10-23T10:12:35.293Z") == parsedLogLine.traceLogInfo.start
+        new DateTime("2013-10-23T10:12:35.302Z") == parsedLogLine.traceLogInfo.end
+        "zfjlsiev" == parsedLogLine.traceLogInfo.callerSpan
+        "d6m3shqy" == parsedLogLine.traceLogInfo.spanId
     }
 }
