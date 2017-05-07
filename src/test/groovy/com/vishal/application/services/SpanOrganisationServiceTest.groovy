@@ -1,8 +1,10 @@
 package com.vishal.application.services
 
+import com.vishal.application.converters.LogLineInfoToSpanMetaDataConverter
 import com.vishal.application.converters.TraceLogInfoToSpanConverter
-import com.vishal.application.entity.Span
 import com.vishal.application.entity.LogLineInfo
+import com.vishal.application.entity.Span
+import com.vishal.application.entity.SpanMetaData
 import org.joda.time.DateTime
 import org.mockito.Mockito
 import spock.lang.Specification
@@ -11,9 +13,13 @@ class SpanOrganisationServiceTest extends Specification {
 
     TraceLogInfoToSpanConverter mockTraceLogInfoToSpanConverter = Mockito.mock(TraceLogInfoToSpanConverter.class)
 
+    LogLineInfoToSpanMetaDataConverter mockLogLineInfoToSpanMetaDataConverter = Mockito.mock(LogLineInfoToSpanMetaDataConverter.class)
+
+    LogLineInfoOrganisationService mockLogLineInfoOrganisationService = Mockito.mock(LogLineInfoOrganisationService.class)
+
     def "should be able to find out root span"() {
         given:
-        SpanOrganisationService spanOrganisationService = new SpanOrganisationService(mockTraceLogInfoToSpanConverter)
+        SpanOrganisationService spanOrganisationService = new SpanOrganisationService(mockTraceLogInfoToSpanConverter, mockLogLineInfoOrganisationService, mockLogLineInfoToSpanMetaDataConverter)
 
         def rootSpan = LogLineInfo
                 .builder()
@@ -65,7 +71,7 @@ class SpanOrganisationServiceTest extends Specification {
 
     def "should be able to set spans/service calls called from current span/service in 'calls' attribute of span object"() {
         given:
-        SpanOrganisationService spanOrganisationService = new SpanOrganisationService(mockTraceLogInfoToSpanConverter)
+        SpanOrganisationService spanOrganisationService = new SpanOrganisationService(mockTraceLogInfoToSpanConverter, mockLogLineInfoOrganisationService, mockLogLineInfoToSpanMetaDataConverter)
 
         def rootSpan = LogLineInfo
                 .builder()
@@ -105,14 +111,20 @@ class SpanOrganisationServiceTest extends Specification {
 
         def traceLogInfos = [rootSpan, backEnd1Span, backEnd2Span, backEnd3Span]
 
-        Mockito.when(mockTraceLogInfoToSpanConverter.convert(rootSpan))
-                .thenReturn(new Span(rootSpan.service, rootSpan.start, rootSpan.end, null))
-        Mockito.when(mockTraceLogInfoToSpanConverter.convert(backEnd1Span))
-                .thenReturn(new Span(backEnd1Span.service, backEnd1Span.start, backEnd1Span.end, null))
-        Mockito.when(mockTraceLogInfoToSpanConverter.convert(backEnd2Span))
-                .thenReturn(new Span(backEnd2Span.service, backEnd2Span.start, backEnd2Span.end, null))
-        Mockito.when(mockTraceLogInfoToSpanConverter.convert(backEnd3Span))
-                .thenReturn(new Span(backEnd3Span.service, backEnd3Span.start, backEnd3Span.end, null))
+        Mockito.when(mockLogLineInfoOrganisationService.buildMapOfLogLineRelatedByCallerSpan(traceLogInfos))
+                .thenReturn(["null": [rootSpan], "aa": [backEnd2Span, backEnd1Span], "ac": [backEnd3Span]])
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(rootSpan))
+                .thenReturn(new SpanMetaData(new Span(rootSpan.service, rootSpan.start, rootSpan.end, null), "aa"))
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd1Span))
+                .thenReturn(new SpanMetaData(new Span(backEnd1Span.service, backEnd1Span.start, backEnd1Span.end, null), "ac"))
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd2Span))
+                .thenReturn(new SpanMetaData(new Span(backEnd2Span.service, backEnd2Span.start, backEnd2Span.end, null), "ab"))
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd3Span))
+                .thenReturn(new SpanMetaData(new Span(backEnd3Span.service, backEnd3Span.start, backEnd3Span.end, null), "ad"))
 
         when:
         List<Span> relatedSpans = spanOrganisationService.findRelatedSpans(traceLogInfos)

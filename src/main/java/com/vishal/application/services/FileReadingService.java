@@ -30,7 +30,6 @@ public class FileReadingService {
     public Map<String, List<LogLineInfo>> readFile(String filePath) throws IOException {
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
             HashMap<String, List<LogLineInfo>> mapOfTraceAndSpans = new HashMap<>();
-
             stream
                     .map(logLineParser::parse)
                     .collect(Collectors.toList())
