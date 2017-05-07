@@ -1,4 +1,4 @@
-package com.vishal.application
+package com.vishal.application.services
 
 import com.vishal.application.entity.LogLine
 import com.vishal.application.entity.Span
@@ -16,7 +16,8 @@ class FileReadingServiceTest extends Specification {
 
     String filePath
 
-    @Shared ClassLoader classLoader = getClass().getClassLoader()
+    @Shared
+    ClassLoader classLoader = getClass().getClassLoader()
 
     def setup() {
         filePath = classLoader.getResource("small-log.txt").getFile()

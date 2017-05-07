@@ -1,4 +1,4 @@
-package com.vishal.application;
+package com.vishal.application.services;
 
 import com.vishal.application.entity.LogLine;
 import com.vishal.application.entity.Span;
