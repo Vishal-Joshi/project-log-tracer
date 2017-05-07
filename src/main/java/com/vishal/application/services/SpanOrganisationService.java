@@ -29,29 +29,6 @@ public class SpanOrganisationService {
         this.logLineInfoToSpanMetaDataConverter = logLineInfoToSpanMetaDataConverter;
     }
 
-    public LogLineInfo fetchRootSpan(List<LogLineInfo> logInfosForTrace) {
-        return logInfosForTrace
-                .stream()
-                .filter(logInfo -> logInfo.getCallerSpan() == null || logInfo.getCallerSpan().equals("null"))
-                .collect(Collectors.toList())
-                .get(0);
-    }
-
-    private LogLineInfo fetchLogLineInfo(String serviceId, List<LogLineInfo> logInfosForTrace) {
-        return logInfosForTrace
-                .stream()
-                .filter(logInfo -> logInfo.getService().equals(serviceId))
-                .collect(Collectors.toList())
-                .get(0);
-    }
-
-    private List<LogLineInfo> fetchChildren(String spanIdOfParent, List<LogLineInfo> logInfosForTrace) {
-        return logInfosForTrace
-                .stream()
-                .filter(logInfo -> logInfo.getCallerSpan().equals(spanIdOfParent))
-                .collect(Collectors.toList());
-    }
-
     public List<Span> findRelatedSpans(List<LogLineInfo> logLineInfoList) {
         Map<String, List<LogLineInfo>> mapOfCallerSpanAndLogLineInfo =
                 logLineInfoOrganisationService.buildMapOfLogLineRelatedByCallerSpan(logLineInfoList);

@@ -17,58 +17,6 @@ class SpanOrganisationServiceTest extends Specification {
 
     LogLineInfoOrganisationService mockLogLineInfoOrganisationService = Mockito.mock(LogLineInfoOrganisationService.class)
 
-    def "should be able to find out root span"() {
-        given:
-        SpanOrganisationService spanOrganisationService = new SpanOrganisationService(mockTraceLogInfoToSpanConverter, mockLogLineInfoOrganisationService, mockLogLineInfoToSpanMetaDataConverter)
-
-        def rootSpan = LogLineInfo
-                .builder()
-                .start(DateTime.now())
-                .end(DateTime.now().plusSeconds(2))
-                .service("front-end")
-                .callerSpan("null")
-                .spanId("aa")
-                .build()
-
-        def backEnd2Span = LogLineInfo
-                .builder()
-                .start(DateTime.now())
-                .end(DateTime.now().plusSeconds(2))
-                .service("back-end-2")
-                .callerSpan("aa")
-                .spanId("ab")
-                .build()
-
-        def backEnd1Span = LogLineInfo
-                .builder()
-                .start(DateTime.now())
-                .end(DateTime.now().plusSeconds(2))
-                .service("back-end-1")
-                .callerSpan("aa")
-                .spanId("ac")
-                .build()
-
-        def backEnd3Span = LogLineInfo
-                .builder()
-                .start(DateTime.now())
-                .end(DateTime.now().plusSeconds(2))
-                .service("back-end-3")
-                .callerSpan("ac")
-                .spanId("ad")
-                .build()
-
-        def traceLogInfos = [rootSpan, backEnd1Span, backEnd2Span, backEnd3Span]
-
-        Mockito.when(mockTraceLogInfoToSpanConverter.convert(rootSpan)).thenReturn(new Span(rootSpan.service, rootSpan.start, rootSpan.end, null))
-
-        when:
-        LogLineInfo actualRootLogInfo = spanOrganisationService.fetchRootSpan(traceLogInfos)
-
-        then:
-        null != actualRootLogInfo
-        rootSpan.service.equals("front-end")
-    }
-
     def "should be able to set spans/service calls called from current span/service in 'calls' attribute of span object"() {
         given:
         SpanOrganisationService spanOrganisationService = new SpanOrganisationService(mockTraceLogInfoToSpanConverter, mockLogLineInfoOrganisationService, mockLogLineInfoToSpanMetaDataConverter)
