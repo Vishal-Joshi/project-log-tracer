@@ -1,6 +1,6 @@
 package com.vishal.application.services;
 
-import com.vishal.application.entity.TraceLogInfo;
+import com.vishal.application.entity.LogLineInfo;
 import com.vishal.application.parsers.TraceLogLineParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,19 +27,20 @@ public class FileReadingService {
         this.logLineParser = traceLogLineParser;
     }
 
-    public Map<String, List<TraceLogInfo>> readFile(String filePath) throws IOException {
+    public Map<String, List<LogLineInfo>> readFile(String filePath) throws IOException {
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            HashMap<String, List<TraceLogInfo>> mapOfTraceAndSpans = new HashMap<>();
+            HashMap<String, List<LogLineInfo>> mapOfTraceAndSpans = new HashMap<>();
+
             stream
                     .map(logLineParser::parse)
                     .collect(Collectors.toList())
                     .forEach(logLineObject -> {
                         if (mapOfTraceAndSpans.containsKey(logLineObject.getTrace())) {
-                            mapOfTraceAndSpans.get(logLineObject.getTrace()).add(logLineObject.getTraceLogInfo());
+                            mapOfTraceAndSpans.get(logLineObject.getTrace()).add(logLineObject.getLogLineInfo());
                         } else {
-                            List<TraceLogInfo> traceLogInfoList = new ArrayList<>();
-                            traceLogInfoList.add(logLineObject.getTraceLogInfo());
-                            mapOfTraceAndSpans.put(logLineObject.getTrace(), traceLogInfoList);
+                            List<LogLineInfo> logLineInfoList = new ArrayList<>();
+                            logLineInfoList.add(logLineObject.getLogLineInfo());
+                            mapOfTraceAndSpans.put(logLineObject.getTrace(), logLineInfoList);
                         }
                     });
             return mapOfTraceAndSpans;

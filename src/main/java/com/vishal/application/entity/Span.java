@@ -1,11 +1,15 @@
 package com.vishal.application.entity;
 
-import lombok.Value;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.joda.time.DateTime;
 
 import java.util.List;
 
-@Value
+@Getter
+@Setter
+@Builder
 public class Span {
     private String service;
     private DateTime start;

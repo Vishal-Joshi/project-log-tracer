@@ -1,7 +1,7 @@
 package com.vishal.application.parsers;
 
 import com.vishal.application.entity.LogLine;
-import com.vishal.application.entity.TraceLogInfo;
+import com.vishal.application.entity.LogLineInfo;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ public class TraceLogLineParser {
         return LogLine
                 .builder()
                 .trace(traceLogLineSplit[2])
-                .traceLogInfo(TraceLogInfo
+                .logLineInfo(LogLineInfo
                         .builder()
                         .start(new DateTime(traceLogLineSplit[0]))
                         .end(new DateTime(traceLogLineSplit[1]))

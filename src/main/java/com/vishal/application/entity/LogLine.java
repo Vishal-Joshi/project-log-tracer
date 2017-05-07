@@ -9,6 +9,6 @@ import lombok.Setter;
 @Builder
 public class LogLine {
     private String trace;
-    private TraceLogInfo traceLogInfo;
+    private LogLineInfo logLineInfo;
 
 }

@@ -8,7 +8,7 @@ import org.joda.time.DateTime;
 @Getter
 @Setter
 @Builder
-public class TraceLogInfo {
+public class LogLineInfo {
     private DateTime start;
     private DateTime end;
     private String service;

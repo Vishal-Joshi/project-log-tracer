@@ -1,15 +1,20 @@
 package com.vishal.application.converters;
 
 import com.vishal.application.entity.Span;
-import com.vishal.application.entity.TraceLogInfo;
+import com.vishal.application.entity.LogLineInfo;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TraceLogInfoToSpanConverter implements Converter<TraceLogInfo, Span> {
+public class TraceLogInfoToSpanConverter implements Converter<LogLineInfo, Span> {
 
     @Override
-    public Span convert(TraceLogInfo traceLogInfo) {
-        return new Span(traceLogInfo.getService(), traceLogInfo.getStart(), traceLogInfo.getEnd(), null);
+    public Span convert(LogLineInfo logLineInfo) {
+        return Span
+                .builder()
+                .service(logLineInfo.getService())
+                .start(logLineInfo.getStart())
+                .end(logLineInfo.getEnd())
+                .build();
     }
 }

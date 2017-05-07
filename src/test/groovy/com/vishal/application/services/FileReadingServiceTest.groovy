@@ -1,7 +1,7 @@
 package com.vishal.application.services
 
 import com.vishal.application.entity.LogLine
-import com.vishal.application.entity.TraceLogInfo
+import com.vishal.application.entity.LogLineInfo
 import com.vishal.application.parsers.TraceLogLineParser
 import org.joda.time.DateTime
 import org.mockito.Mockito
@@ -27,12 +27,12 @@ class FileReadingServiceTest extends Specification {
         given:
         String twoLogLinesFilePath = classLoader.getResource("two-log-lines.txt").getFile()
         Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.298Z 2013-10-23T10:12:35.300Z eckakaau service3 d6m3shqy->62d45qeh"))
-                .thenReturn(new LogLine("eckakaau", new TraceLogInfo(new DateTime("2013-10-23T10:12:35.298Z"), new DateTime("2013-10-23T10:12:35.300Z"), "service3", "d6m3shqy", "62d45qeh")))
+                .thenReturn(new LogLine("eckakaau", new LogLineInfo(new DateTime("2013-10-23T10:12:35.298Z"), new DateTime("2013-10-23T10:12:35.300Z"), "service3", "d6m3shqy", "62d45qeh")))
         Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.293Z 2013-10-23T10:12:35.302Z eckakaau service7 zfjlsiev->d6m3shqy"))
-                .thenReturn(new LogLine("eckakaau", new TraceLogInfo(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service7", "zfjlsiev", "d6m3shqy")))
+                .thenReturn(new LogLine("eckakaau", new LogLineInfo(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service7", "zfjlsiev", "d6m3shqy")))
 
         when:
-        Map<String, List<TraceLogInfo>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
+        Map<String, List<LogLineInfo>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
 
         then:
         !fileContent.isEmpty()
@@ -44,14 +44,14 @@ class FileReadingServiceTest extends Specification {
         given:
         String twoLogLinesFilePath = classLoader.getResource("three-log-lines.txt").getFile()
         Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.298Z 2013-10-23T10:12:35.300Z eckakaau service3 d6m3shqy->62d45qeh"))
-                .thenReturn(new LogLine("eckakaau", new TraceLogInfo(new DateTime("2013-10-23T10:12:35.298Z"), new DateTime("2013-10-23T10:12:35.300Z"), "service3", "d6m3shqy", "62d45qeh")))
+                .thenReturn(new LogLine("eckakaau", new LogLineInfo(new DateTime("2013-10-23T10:12:35.298Z"), new DateTime("2013-10-23T10:12:35.300Z"), "service3", "d6m3shqy", "62d45qeh")))
         Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.293Z 2013-10-23T10:12:35.302Z eckakaau service7 zfjlsiev->d6m3shqy"))
-                .thenReturn(new LogLine("eckakaau", new TraceLogInfo(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service7", "zfjlsiev", "d6m3shqy")))
+                .thenReturn(new LogLine("eckakaau", new LogLineInfo(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service7", "zfjlsiev", "d6m3shqy")))
         Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.293Z 2013-10-23T10:12:35.302Z abcdef service10 iojlsitb->hjm3shfd"))
-                .thenReturn(new LogLine("abcdef", new TraceLogInfo(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service10", "iojlsitb", "hjm3shfd")))
+                .thenReturn(new LogLine("abcdef", new LogLineInfo(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service10", "iojlsitb", "hjm3shfd")))
 
         when:
-        Map<String, List<TraceLogInfo>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
+        Map<String, List<LogLineInfo>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
 
         then:
         !fileContent.isEmpty()
