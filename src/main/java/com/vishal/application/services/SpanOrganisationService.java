@@ -67,6 +67,7 @@ public class SpanOrganisationService {
                         .stream()
                         .filter(spanMetaData -> spanMetaData.getSpanId().equals(spanId))
                         .findFirst())
+                .filter(Optional::isPresent)
                 .map((optionalSpanMetaData) -> optionalSpanMetaData.get().getSpan())
                 .collect(Collectors.toList());
 
