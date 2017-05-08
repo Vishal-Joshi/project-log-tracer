@@ -22,9 +22,10 @@ public class NewSpanOrganisationService {
     }
 
     public Span organiseRootSpanAndItsChildren(List<LogLineInfo> logLineInfoList) {
-        Map<String, List<LogLineInfo>> mapOfCallerSpanIdsVsLogLineInfo = logLineInfoOrganisationService.buildMapOfCallerSpanIdsVsLogLineInfo(logLineInfoList);
         Map<String, Span> mapOfSpanIdsVsSpan = logLineInfoOrganisationService.buildMapOfSpanIdsVsSpan(logLineInfoList);
-        Map<String, List<Span>> mapOfCallerIdsVsSpan = mapOfCallerSpanIdsVsLogLineInfo
+        //convert list of log line info to list of spans for each caller span id
+        Map<String, List<Span>> mapOfCallerIdsVsSpan = logLineInfoOrganisationService
+                .buildMapOfCallerSpanIdsVsLogLineInfo(logLineInfoList)
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entrySetValues -> entrySetValues
@@ -34,7 +35,10 @@ public class NewSpanOrganisationService {
                         .collect(Collectors.toList())));
 
         //attach children
-        mapOfCallerIdsVsSpan.entrySet().forEach(entrySet -> mapOfSpanIdsVsSpan.get(entrySet.getKey()).setCalls(entrySet.getValue()));
+        mapOfCallerIdsVsSpan.entrySet()
+                .forEach(entrySet -> mapOfSpanIdsVsSpan
+                        .get(entrySet.getKey())
+                        .setCalls(entrySet.getValue()));
         return mapOfCallerIdsVsSpan.get(ApiConstants.TRACE_INITIATOR_SPAN_ID).get(0);
     }
 }
