@@ -1,5 +1,6 @@
 package com.vishal.application.services
 
+import com.vishal.application.ApiConstants
 import com.vishal.application.converters.LogLineInfoToSpanMetaDataConverter
 import com.vishal.application.entity.LogLineInfo
 import com.vishal.application.entity.Span
@@ -13,7 +14,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
 
     LogLineInfoToSpanMetaDataConverter mockLogLineInfoToSpanMetaDataConverter = Mockito.mock(LogLineInfoToSpanMetaDataConverter.class)
 
-    def "should be able to build a map of LogLineInfo sharing caller span ids"(){
+    def "should be able to build a map of LogLineInfo sharing caller span ids"() {
         given:
         def rootSpan = LogLineInfo
                 .builder()
@@ -67,7 +68,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
 
     }
 
-    def "should be able to build a map of spans each with their own unique span ids"(){
+    def "should be able to build a map of spans each with their own unique span ids"() {
         given:
         def rootSpan = LogLineInfo
                 .builder()
@@ -126,11 +127,39 @@ class LogLineInfoOrganisationServiceTest extends Specification {
 
         then:
         null != mapOfSpanIdsAndSpan
-        4 == mapOfSpanIdsAndSpan.size()
-        mapOfSpanIdsAndSpan.get(rootSpan.spanId)
+        mapOfSpanIdsAndSpan.containsKey(rootSpan.spanId)
         mapOfSpanIdsAndSpan.containsKey(backEnd1Span.spanId)
         mapOfSpanIdsAndSpan.containsKey(backEnd2Span.spanId)
         mapOfSpanIdsAndSpan.containsKey(backEnd3Span.spanId)
+
+    }
+
+    def "should add root span dummy object along with other spans"() {
+        given:
+        def rootSpan = LogLineInfo
+                .builder()
+                .start(DateTime.now())
+                .end(DateTime.now().plusSeconds(2))
+                .service("front-end")
+                .callerSpan("null")
+                .spanId("aa")
+                .build()
+
+        def traceLogInfos = [rootSpan]
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(rootSpan))
+                .thenReturn(new SpanMetaData(new Span(rootSpan.service, rootSpan.start, rootSpan.end, null), "aa"))
+
+        LogLineInfoOrganisationService lineInfoOrganisationService = new LogLineInfoOrganisationService(mockLogLineInfoToSpanMetaDataConverter)
+
+        when:
+        def mapOfSpanIdsAndSpan = lineInfoOrganisationService.buildMapOfSpanIdsVsSpan(traceLogInfos)
+
+        then:
+        null != mapOfSpanIdsAndSpan
+        2 == mapOfSpanIdsAndSpan.size()
+        mapOfSpanIdsAndSpan.containsKey(ApiConstants.TRACE_INITIATOR_SPAN_ID)
+        mapOfSpanIdsAndSpan.containsKey(rootSpan.spanId)
 
     }
 

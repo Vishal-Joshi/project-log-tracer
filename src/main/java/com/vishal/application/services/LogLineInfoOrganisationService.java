@@ -1,5 +1,6 @@
 package com.vishal.application.services;
 
+import com.vishal.application.ApiConstants;
 import com.vishal.application.converters.LogLineInfoToSpanMetaDataConverter;
 import com.vishal.application.entity.LogLineInfo;
 import com.vishal.application.entity.Span;
@@ -28,10 +29,12 @@ public class LogLineInfoOrganisationService {
     }
 
     public Map<String, Span> buildMapOfSpanIdsVsSpan(List<LogLineInfo> logLineInfos) {
-        return logLineInfos
+        Map<String, Span> mapOfSpanIdsVsSpan = logLineInfos
                 .stream()
                 .map(logLineInfo -> logLineInfoToSpanMetaDataConverter.convert(logLineInfo))
                 .collect(Collectors.toMap(SpanMetaData::getSpanId, SpanMetaData::getSpan));
+        mapOfSpanIdsVsSpan.put(ApiConstants.TRACE_INITIATOR_SPAN_ID, Span.builder().build());
+        return mapOfSpanIdsVsSpan;
     }
 
 }
