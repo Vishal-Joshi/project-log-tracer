@@ -8,8 +8,11 @@ import com.vishal.application.entity.SpanMetaData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +28,16 @@ public class LogLineInfoOrganisationService {
     public Map<String, List<LogLineInfo>> buildMapOfCallerSpanIdsVsLogLineInfo(List<LogLineInfo> logLineInfos) {
         return logLineInfos
                 .stream()
-                .collect(Collectors.groupingBy(LogLineInfo::getCallerSpan));
+                .collect(Collectors.groupingBy(LogLineInfo::getCallerSpan,
+                        toSortedList(Comparator.comparing(LogLineInfo::getStart))));
+    }
+
+    private static <T> Collector<T, ?, List<T>> toSortedList(Comparator<? super T> startDateComparator) {
+        return Collectors.collectingAndThen(
+                Collectors.toCollection(ArrayList::new), list -> {
+                    list.sort(startDateComparator);
+                    return list;
+                });
     }
 
     public Map<String, Span> buildMapOfSpanIdsVsSpan(List<LogLineInfo> logLineInfos) {

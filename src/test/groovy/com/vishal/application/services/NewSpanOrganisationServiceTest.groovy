@@ -113,4 +113,5 @@ class NewSpanOrganisationServiceTest extends Specification {
         1 == actualBackEnd1Span.calls.size()
         null != actualBackEnd1Span.calls.find({ (it.service == "back-end-3") })
     }
+
 }
