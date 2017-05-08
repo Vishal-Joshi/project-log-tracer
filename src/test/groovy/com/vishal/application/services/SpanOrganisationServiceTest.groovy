@@ -56,7 +56,7 @@ class SpanOrganisationServiceTest extends Specification {
 
         def traceLogInfos = [rootSpan, backEnd1Span, backEnd2Span, backEnd3Span]
 
-        Mockito.when(mockLogLineInfoOrganisationService.buildMapOfCallerSpanIdsVsSpans(traceLogInfos))
+        Mockito.when(mockLogLineInfoOrganisationService.buildMapOfCallerSpanIdsVsLogLineInfo(traceLogInfos))
                 .thenReturn(["null": [rootSpan], "aa": [backEnd2Span, backEnd1Span], "ac": [backEnd3Span]])
 
         Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(rootSpan))

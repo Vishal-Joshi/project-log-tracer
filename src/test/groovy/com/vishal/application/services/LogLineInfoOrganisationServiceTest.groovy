@@ -56,7 +56,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
         LogLineInfoOrganisationService lineInfoOrganisationService = new LogLineInfoOrganisationService(mockLogLineInfoToSpanMetaDataConverter)
 
         when:
-        def mapOfCallerIdsAndLogLineInfo = lineInfoOrganisationService.buildMapOfCallerSpanIdsVsSpans(traceLogInfos)
+        def mapOfCallerIdsAndLogLineInfo = lineInfoOrganisationService.buildMapOfCallerSpanIdsVsLogLineInfo(traceLogInfos)
 
         then:
         null != mapOfCallerIdsAndLogLineInfo
