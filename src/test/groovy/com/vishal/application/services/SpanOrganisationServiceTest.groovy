@@ -1,7 +1,6 @@
 package com.vishal.application.services
 
 import com.vishal.application.converters.LogLineInfoToSpanMetaDataConverter
-import com.vishal.application.converters.TraceLogInfoToSpanConverter
 import com.vishal.application.entity.LogLineInfo
 import com.vishal.application.entity.Span
 import com.vishal.application.entity.SpanMetaData
@@ -11,15 +10,13 @@ import spock.lang.Specification
 
 class SpanOrganisationServiceTest extends Specification {
 
-    TraceLogInfoToSpanConverter mockTraceLogInfoToSpanConverter = Mockito.mock(TraceLogInfoToSpanConverter.class)
-
     LogLineInfoToSpanMetaDataConverter mockLogLineInfoToSpanMetaDataConverter = Mockito.mock(LogLineInfoToSpanMetaDataConverter.class)
 
     LogLineInfoOrganisationService mockLogLineInfoOrganisationService = Mockito.mock(LogLineInfoOrganisationService.class)
 
     def "should be able to set spans/service calls called from current span/service in 'calls' attribute of span object"() {
         given:
-        SpanOrganisationService spanOrganisationService = new SpanOrganisationService(mockTraceLogInfoToSpanConverter, mockLogLineInfoOrganisationService, mockLogLineInfoToSpanMetaDataConverter)
+        SpanOrganisationService spanOrganisationService = new SpanOrganisationService(mockLogLineInfoOrganisationService, mockLogLineInfoToSpanMetaDataConverter)
 
         def rootSpan = LogLineInfo
                 .builder()

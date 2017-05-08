@@ -1,7 +1,6 @@
 package com.vishal.application.services;
 
 import com.vishal.application.converters.LogLineInfoToSpanMetaDataConverter;
-import com.vishal.application.converters.TraceLogInfoToSpanConverter;
 import com.vishal.application.entity.LogLineInfo;
 import com.vishal.application.entity.Span;
 import com.vishal.application.entity.SpanMetaData;
@@ -16,15 +15,12 @@ import java.util.stream.Collectors;
 @Service
 public class SpanOrganisationService {
 
-    private TraceLogInfoToSpanConverter traceLogInfoToSpanConverter;
     private LogLineInfoOrganisationService logLineInfoOrganisationService;
     private LogLineInfoToSpanMetaDataConverter logLineInfoToSpanMetaDataConverter;
 
     @Autowired
-    public SpanOrganisationService(TraceLogInfoToSpanConverter traceLogInfoToSpanConverter,
-                                   LogLineInfoOrganisationService logLineInfoOrganisationService,
+    public SpanOrganisationService(LogLineInfoOrganisationService logLineInfoOrganisationService,
                                    LogLineInfoToSpanMetaDataConverter logLineInfoToSpanMetaDataConverter) {
-        this.traceLogInfoToSpanConverter = traceLogInfoToSpanConverter;
         this.logLineInfoOrganisationService = logLineInfoOrganisationService;
         this.logLineInfoToSpanMetaDataConverter = logLineInfoToSpanMetaDataConverter;
     }
