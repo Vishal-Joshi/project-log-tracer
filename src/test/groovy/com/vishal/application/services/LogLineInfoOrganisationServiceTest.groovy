@@ -16,7 +16,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
 
     def "should be able to build a map of LogLineInfo sharing caller span ids"() {
         given:
-        def rootSpan = LogLineInfo
+        def rootLogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -25,7 +25,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("aa")
                 .build()
 
-        def backEnd2Span = LogLineInfo
+        def backEnd2LogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -34,7 +34,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("ab")
                 .build()
 
-        def backEnd1Span = LogLineInfo
+        def backEnd1LogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -43,7 +43,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("ac")
                 .build()
 
-        def backEnd3Span = LogLineInfo
+        def backEnd3LogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -52,7 +52,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("ad")
                 .build()
 
-        def traceLogInfos = [rootSpan, backEnd1Span, backEnd2Span, backEnd3Span]
+        def traceLogInfos = [rootLogLineInfo, backEnd1LogLineInfo, backEnd2LogLineInfo, backEnd3LogLineInfo]
 
         LogLineInfoOrganisationService lineInfoOrganisationService = new LogLineInfoOrganisationService(mockLogLineInfoToSpanMetaDataConverter)
 
@@ -62,15 +62,15 @@ class LogLineInfoOrganisationServiceTest extends Specification {
         then:
         null != mapOfCallerIdsAndLogLineInfo
         3 == mapOfCallerIdsAndLogLineInfo.size()
-        mapOfCallerIdsAndLogLineInfo.get("null").containsAll([rootSpan])
-        mapOfCallerIdsAndLogLineInfo.get("aa").containsAll([backEnd1Span, backEnd2Span])
-        mapOfCallerIdsAndLogLineInfo.get("ac").containsAll([backEnd3Span])
+        mapOfCallerIdsAndLogLineInfo.get("null").containsAll([rootLogLineInfo])
+        mapOfCallerIdsAndLogLineInfo.get("aa").containsAll([backEnd1LogLineInfo, backEnd2LogLineInfo])
+        mapOfCallerIdsAndLogLineInfo.get("ac").containsAll([backEnd3LogLineInfo])
 
     }
 
     def "should be able to build a map of spans each with their own unique span ids"() {
         given:
-        def rootSpan = LogLineInfo
+        def rootLogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -79,7 +79,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("aa")
                 .build()
 
-        def backEnd2Span = LogLineInfo
+        def backEnd2LogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -88,7 +88,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("ab")
                 .build()
 
-        def backEnd1Span = LogLineInfo
+        def backEnd1LogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -97,7 +97,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("ac")
                 .build()
 
-        def backEnd3Span = LogLineInfo
+        def backEnd3LogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -106,19 +106,52 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("ad")
                 .build()
 
-        def traceLogInfos = [rootSpan, backEnd1Span, backEnd2Span, backEnd3Span]
+        def traceLogInfos = [rootLogLineInfo, backEnd1LogLineInfo, backEnd2LogLineInfo, backEnd3LogLineInfo]
 
-        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(rootSpan))
-                .thenReturn(new SpanMetaData(new Span(rootSpan.service, rootSpan.start, rootSpan.end, null), "aa"))
 
-        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd1Span))
-                .thenReturn(new SpanMetaData(new Span(backEnd1Span.service, backEnd1Span.start, backEnd1Span.end, null), "ac"))
+        def rootSpan = Span
+                .builder()
+                .service(rootLogLineInfo.getService())
+                .start(rootLogLineInfo.getStart())
+                .end(rootLogLineInfo.getEnd())
+                .calls(new ArrayList<Span>())
+                .build()
 
-        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd2Span))
-                .thenReturn(new SpanMetaData(new Span(backEnd2Span.service, backEnd2Span.start, backEnd2Span.end, null), "ab"))
+        def backEnd1Span = Span
+                .builder()
+                .service(backEnd1LogLineInfo.getService())
+                .start(backEnd1LogLineInfo.getStart())
+                .end(backEnd1LogLineInfo.getEnd())
+                .calls(new ArrayList<Span>())
+                .build()
 
-        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd3Span))
-                .thenReturn(new SpanMetaData(new Span(backEnd3Span.service, backEnd3Span.start, backEnd3Span.end, null), "ad"))
+        def backEnd2Span = Span
+                .builder()
+                .service(backEnd2LogLineInfo.getService())
+                .start(backEnd2LogLineInfo.getStart())
+                .end(backEnd2LogLineInfo.getEnd())
+                .calls(new ArrayList<Span>())
+                .build()
+
+        def backEnd3Span = Span
+                .builder()
+                .service(backEnd3LogLineInfo.getService())
+                .start(backEnd3LogLineInfo.getStart())
+                .end(backEnd3LogLineInfo.getEnd())
+                .calls(new ArrayList<Span>())
+                .build()
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(rootLogLineInfo))
+                .thenReturn(new SpanMetaData(rootSpan, "aa"))
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd1LogLineInfo))
+                .thenReturn(new SpanMetaData(backEnd1Span, "ac"))
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd2LogLineInfo))
+                .thenReturn(new SpanMetaData(backEnd2Span, "ab"))
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(backEnd3LogLineInfo))
+                .thenReturn(new SpanMetaData(backEnd3Span, "ad"))
 
         LogLineInfoOrganisationService lineInfoOrganisationService = new LogLineInfoOrganisationService(mockLogLineInfoToSpanMetaDataConverter)
 
@@ -127,16 +160,16 @@ class LogLineInfoOrganisationServiceTest extends Specification {
 
         then:
         null != mapOfSpanIdsAndSpan
-        mapOfSpanIdsAndSpan.containsKey(rootSpan.spanId)
-        mapOfSpanIdsAndSpan.containsKey(backEnd1Span.spanId)
-        mapOfSpanIdsAndSpan.containsKey(backEnd2Span.spanId)
-        mapOfSpanIdsAndSpan.containsKey(backEnd3Span.spanId)
+        mapOfSpanIdsAndSpan.containsKey(rootLogLineInfo.spanId)
+        mapOfSpanIdsAndSpan.containsKey(backEnd1LogLineInfo.spanId)
+        mapOfSpanIdsAndSpan.containsKey(backEnd2LogLineInfo.spanId)
+        mapOfSpanIdsAndSpan.containsKey(backEnd3LogLineInfo.spanId)
 
     }
 
     def "should add root span dummy object along with other spans"() {
         given:
-        def rootSpan = LogLineInfo
+        def rootLogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())
                 .end(DateTime.now().plusSeconds(2))
@@ -145,10 +178,18 @@ class LogLineInfoOrganisationServiceTest extends Specification {
                 .spanId("aa")
                 .build()
 
-        def traceLogInfos = [rootSpan]
+        def traceLogInfos = [rootLogLineInfo]
 
-        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(rootSpan))
-                .thenReturn(new SpanMetaData(new Span(rootSpan.service, rootSpan.start, rootSpan.end, null), "aa"))
+        def rootSpan = Span
+                .builder()
+                .service(rootLogLineInfo.getService())
+                .start(rootLogLineInfo.getStart())
+                .end(rootLogLineInfo.getEnd())
+                .calls(new ArrayList<Span>())
+                .build()
+
+        Mockito.when(mockLogLineInfoToSpanMetaDataConverter.convert(rootLogLineInfo))
+                .thenReturn(new SpanMetaData(rootSpan, "aa"))
 
         LogLineInfoOrganisationService lineInfoOrganisationService = new LogLineInfoOrganisationService(mockLogLineInfoToSpanMetaDataConverter)
 
@@ -159,7 +200,7 @@ class LogLineInfoOrganisationServiceTest extends Specification {
         null != mapOfSpanIdsAndSpan
         2 == mapOfSpanIdsAndSpan.size()
         mapOfSpanIdsAndSpan.containsKey(ApiConstants.TRACE_INITIATOR_SPAN_ID)
-        mapOfSpanIdsAndSpan.containsKey(rootSpan.spanId)
+        mapOfSpanIdsAndSpan.containsKey(rootLogLineInfo.spanId)
 
     }
 

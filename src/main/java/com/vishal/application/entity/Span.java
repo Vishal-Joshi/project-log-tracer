@@ -12,10 +12,11 @@ import java.util.List;
 @Setter
 @Builder
 public class Span {
-    private String service;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private DateTime start;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private DateTime end;
+    private String service;
+    private String span;
     private List<Span> calls;
 }
