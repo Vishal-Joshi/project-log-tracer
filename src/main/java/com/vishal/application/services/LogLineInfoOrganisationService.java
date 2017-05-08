@@ -21,7 +21,7 @@ public class LogLineInfoOrganisationService {
         this.logLineInfoToSpanMetaDataConverter = logLineInfoToSpanMetaDataConverter;
     }
 
-    public Map<String, List<LogLineInfo>> buildMapOfLogLineRelatedByCallerSpan(List<LogLineInfo> logLineInfos) {
+    public Map<String, List<LogLineInfo>> buildMapOfCallerSpanIdsVsSpans(List<LogLineInfo> logLineInfos) {
         return logLineInfos
                 .stream()
                 .collect(Collectors.groupingBy(LogLineInfo::getCallerSpan));

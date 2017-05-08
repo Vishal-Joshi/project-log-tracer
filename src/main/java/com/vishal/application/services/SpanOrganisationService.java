@@ -27,7 +27,7 @@ public class SpanOrganisationService {
 
     public List<Span> findRelatedSpans(List<LogLineInfo> logLineInfoList) {
         Map<String, List<LogLineInfo>> mapOfCallerSpanAndLogLineInfo =
-                logLineInfoOrganisationService.buildMapOfLogLineRelatedByCallerSpan(logLineInfoList);
+                logLineInfoOrganisationService.buildMapOfCallerSpanIdsVsSpans(logLineInfoList);
         //convert of all keys which are caller span ids to span metadata objects.
         List<SpanMetaData> spansMetaDataForEachCallerSpanIds = mapOfCallerSpanAndLogLineInfo
                 .keySet()
