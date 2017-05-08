@@ -4,6 +4,6 @@ import lombok.Value;
 
 @Value
 public class Trace {
-    private String trace;
+    private String id;
     private Span root;
 }
