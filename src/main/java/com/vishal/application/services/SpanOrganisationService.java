@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
  * Created by vishal.joshi on 5/8/17.
  */
 @Service
-public class NewSpanOrganisationService {
+public class SpanOrganisationService {
 
     private LogLineInfoOrganisationService logLineInfoOrganisationService;
 
-    public NewSpanOrganisationService(LogLineInfoOrganisationService logLineInfoOrganisationService) {
+    public SpanOrganisationService(LogLineInfoOrganisationService logLineInfoOrganisationService) {
         this.logLineInfoOrganisationService = logLineInfoOrganisationService;
     }
 

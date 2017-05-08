@@ -9,13 +9,13 @@ import spock.lang.Specification
 /**
  * Created by vishal.joshi on 5/8/17.
  */
-class NewSpanOrganisationServiceTest extends Specification {
+class SpanOrganisationServiceTest extends Specification {
 
     LogLineInfoOrganisationService mockLogLineInfoOrganisationService = Mockito.mock(LogLineInfoOrganisationService.class);
 
     def "should be return root span with all its children correctly associated"() {
         given:
-        NewSpanOrganisationService newSpanOrganisationService = new NewSpanOrganisationService(mockLogLineInfoOrganisationService)
+        SpanOrganisationService newSpanOrganisationService = new SpanOrganisationService(mockLogLineInfoOrganisationService)
         def rootLogLineInfo = LogLineInfo
                 .builder()
                 .start(DateTime.now())

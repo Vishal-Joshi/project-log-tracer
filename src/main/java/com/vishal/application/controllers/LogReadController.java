@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishal.application.entity.Span;
 import com.vishal.application.entity.Trace;
 import com.vishal.application.services.FileReadingService;
-import com.vishal.application.services.NewSpanOrganisationService;
+import com.vishal.application.services.SpanOrganisationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,12 +19,12 @@ import java.io.IOException;
 public class LogReadController {
 
     private final FileReadingService fileReadingService;
-    private final NewSpanOrganisationService spanOrganisationService;
+    private final SpanOrganisationService spanOrganisationService;
     private ObjectMapper objectMapper;
 
     @Autowired
     public LogReadController(FileReadingService fileReadingService,
-                             NewSpanOrganisationService spanOrganisationService,
+                             SpanOrganisationService spanOrganisationService,
                              ObjectMapper objectMapper) {
         this.fileReadingService = fileReadingService;
         this.spanOrganisationService = spanOrganisationService;
