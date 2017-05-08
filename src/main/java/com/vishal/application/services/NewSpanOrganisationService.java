@@ -34,9 +34,7 @@ public class NewSpanOrganisationService {
                         .collect(Collectors.toList())));
 
         //attach children
-        mapOfCallerIdsVsSpan.entrySet().forEach(entrySet -> {
-            mapOfSpanIdsVsSpan.get(entrySet.getKey()).setCalls(entrySet.getValue());
-        });
+        mapOfCallerIdsVsSpan.entrySet().forEach(entrySet -> mapOfSpanIdsVsSpan.get(entrySet.getKey()).setCalls(entrySet.getValue()));
         return mapOfCallerIdsVsSpan.get(ApiConstants.TRACE_INITIATOR_SPAN_ID).get(0);
     }
 }
