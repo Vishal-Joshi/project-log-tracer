@@ -1,8 +1,12 @@
 package com.vishal.application.entity;
 
-import lombok.Value;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Value
+@Getter
+@Setter
+@Builder
 public class Trace {
     private String id;
     private Span root;

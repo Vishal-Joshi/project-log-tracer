@@ -40,7 +40,7 @@ public class LogReadController {
                     .entrySet()
                     .forEach(set -> {
                         Span root = spanOrganisationService.organiseRootSpanAndItsChildren(set.getValue());
-                        Trace trace = new Trace(set.getKey(), root);
+                        Trace trace = Trace.builder().id(set.getKey()).root(root).build();
                         try {
                             resultantJsonString.append(objectMapper.writeValueAsString(trace));
                         } catch (JsonProcessingException jsonProcessingException) {
