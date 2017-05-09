@@ -69,4 +69,23 @@ class FileReadingServiceTest extends Specification {
         thrown IOException
 
     }
+
+
+    def "should return map of trace ids and logLineInfo with logLineInfo ordered by end time"() {
+        given:
+        String twoLogLinesFilePath = classLoader.getResource("log-lines-unordered-by-end-time.txt").getFile()
+        Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.298Z 2013-10-23T10:12:35.300Z eckakaau service3 d6m3shqy->62d45qeh"))
+                .thenReturn(new LogLine("eckakaau", new LogLineInfo(new DateTime("2013-10-23T10:12:35.298Z"), new DateTime("2013-10-23T10:12:35.300Z"), "service3", "d6m3shqy", "62d45qeh")))
+        Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.293Z 2013-10-23T10:12:35.302Z eckakaau service7 zfjlsiev->d6m3shqy"))
+                .thenReturn(new LogLine("eckakaau", new LogLineInfo(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.302Z"), "service7", "zfjlsiev", "d6m3shqy")))
+        Mockito.when(mockTraceLogLineParser.parse("2013-10-23T10:12:35.293Z 2013-10-23T10:12:35.299Z eckakaau service8 cfjlsitb->d7m3shhj"))
+                .thenReturn(new LogLine("eckakaau", new LogLineInfo(new DateTime("2013-10-23T10:12:35.293Z"), new DateTime("2013-10-23T10:12:35.299Z"), "service8", "cfjlsitb", "d7m3shhj")))
+        when:
+        Map<String, List<LogLineInfo>> fileContent = fileReadingService.readFile(twoLogLinesFilePath)
+
+        then:
+        fileContent.get("eckakaau")[0].spanId == "d7m3shhj"
+        fileContent.get("eckakaau")[1].spanId == "62d45qeh"
+        fileContent.get("eckakaau")[2].spanId == "d6m3shqy"
+    }
 }

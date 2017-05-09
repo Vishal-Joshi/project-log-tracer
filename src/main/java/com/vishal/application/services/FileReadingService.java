@@ -1,5 +1,6 @@
 package com.vishal.application.services;
 
+import com.vishal.application.entity.LogLine;
 import com.vishal.application.entity.LogLineInfo;
 import com.vishal.application.parsers.TraceLogLineParser;
 import lombok.extern.slf4j.Slf4j;
@@ -30,18 +31,19 @@ public class FileReadingService {
     public Map<String, List<LogLineInfo>> readFile(String filePath) throws IOException {
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
             HashMap<String, List<LogLineInfo>> mapOfTraceAndSpans = new HashMap<>();
-            stream
+            List<LogLine> listOfLogLines = stream
                     .map(logLineParser::parse)
-                    .collect(Collectors.toList())
-                    .forEach(logLineObject -> {
-                        if (mapOfTraceAndSpans.containsKey(logLineObject.getTrace())) {
-                            mapOfTraceAndSpans.get(logLineObject.getTrace()).add(logLineObject.getLogLineInfo());
-                        } else {
-                            List<LogLineInfo> logLineInfoList = new ArrayList<>();
-                            logLineInfoList.add(logLineObject.getLogLineInfo());
-                            mapOfTraceAndSpans.put(logLineObject.getTrace(), logLineInfoList);
-                        }
-                    });
+                    .collect(Collectors.toList());
+            listOfLogLines.sort((LogLine logLine1, LogLine logLine2) -> (logLine1.getLogLineInfo().getEnd().compareTo(logLine2.getLogLineInfo().getEnd())));
+            listOfLogLines.forEach(logLineObject -> {
+                if (mapOfTraceAndSpans.containsKey(logLineObject.getTrace())) {
+                    mapOfTraceAndSpans.get(logLineObject.getTrace()).add(logLineObject.getLogLineInfo());
+                } else {
+                    List<LogLineInfo> logLineInfoList = new ArrayList<>();
+                    logLineInfoList.add(logLineObject.getLogLineInfo());
+                    mapOfTraceAndSpans.put(logLineObject.getTrace(), logLineInfoList);
+                }
+            });
             return mapOfTraceAndSpans;
         } catch (IOException iOException) {
             log.error("IOException occurred", iOException);
