@@ -5,10 +5,7 @@ import com.vishal.application.entity.Trace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by vishal.joshi on 5/8/17.
@@ -40,5 +37,11 @@ public class TraceOrderingService {
             orderedTraceIdsIterator.remove();
         }
         return listOfOrderedTraceObjects;
+    }
+
+    public List<Trace> orderByStartDateOfRootSpan(List<Trace> traceList) {
+        traceList.sort(Comparator.comparing(trace -> trace.getRoot().getStart()));
+        return traceList;
+
     }
 }

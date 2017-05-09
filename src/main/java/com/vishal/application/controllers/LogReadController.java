@@ -14,7 +14,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +50,7 @@ public class LogReadController {
         StringBuilder resultantJsonString = new StringBuilder();
         List<Trace> resultantTraceList = new ArrayList<>();
         try {
-            Map<String, List<LogLineInfo>> traceIdVsLogLineInfo = fileReadingService.readFile(classLoader.getResource("logs/small-log.txt").getFile());
+            Map<String, List<LogLineInfo>> traceIdVsLogLineInfo = fileReadingService.readFile(classLoader.getResource("logs/medium-log.txt").getFile());
             traceIdVsLogLineInfo
                     .entrySet()
                     .forEach(set -> {
@@ -55,7 +60,7 @@ public class LogReadController {
                     });
 
             traceOrderingService
-                    .orderByEarliestFinishingSpan(resultantTraceList, traceIdVsLogLineInfo)
+                    .orderByStartDateOfRootSpan(resultantTraceList)
                     .forEach(trace -> {
                         try {
                             resultantJsonString.append(objectMapper.writeValueAsString(trace)).append("\r\n ");
@@ -67,6 +72,15 @@ public class LogReadController {
         } catch (IOException ioException) {
             log.error("exception occurred while reading log file", ioException);
         }
-        return resultantJsonString.toString().trim();
+        String trimmedResultantJson = resultantJsonString.toString().trim();
+        Path path = Paths.get("/Users/vishal/Documents/actual-medium-log.txt");
+        try {
+            try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+                writer.write(trimmedResultantJson);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return trimmedResultantJson;
     }
 }
