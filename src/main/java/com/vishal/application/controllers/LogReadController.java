@@ -58,7 +58,7 @@ public class LogReadController {
                     .orderByEarliestFinishingSpan(resultantTraceList, traceIdVsLogLineInfo)
                     .forEach(trace -> {
                         try {
-                            resultantJsonString.append(objectMapper.writeValueAsString(trace) + "\r\n ");
+                            resultantJsonString.append(objectMapper.writeValueAsString(trace)).append("\r\n ");
                         } catch (JsonProcessingException jsonProcessingException) {
                             log.error("exception occurred while json serialisation of trace:", trace.toString(), jsonProcessingException);
                         }
