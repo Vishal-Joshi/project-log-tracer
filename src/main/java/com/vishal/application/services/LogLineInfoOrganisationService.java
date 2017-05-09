@@ -49,5 +49,17 @@ public class LogLineInfoOrganisationService {
         return mapOfSpanIdsVsSpan;
     }
 
+    public List<String> orderTraceIdsByEarliestFinishingSpan(Map<String, List<LogLineInfo>> mapOfTraceIdsVsLogLineInfo) {
+        return mapOfTraceIdsVsLogLineInfo
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(entrySet -> entrySet.getValue().get(0).getEnd(), Map.Entry::getKey))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+    }
+
 }
 
