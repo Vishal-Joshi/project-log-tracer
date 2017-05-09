@@ -67,6 +67,6 @@ public class LogReadController {
         } catch (IOException ioException) {
             log.error("exception occurred while reading log file", ioException);
         }
-        return resultantJsonString.toString();
+        return resultantJsonString.toString().trim();
     }
 }
