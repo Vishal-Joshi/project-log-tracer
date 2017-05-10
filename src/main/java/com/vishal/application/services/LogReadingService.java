@@ -3,6 +3,7 @@ package com.vishal.application.services;
 import com.vishal.application.TraceObjectFactory;
 import com.vishal.application.entity.Span;
 import com.vishal.application.entity.Trace;
+import groovy.util.logging.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * Created by vishal.joshi on 5/10/17.
  */
 @Service
+@Slf4j
 public class LogReadingService {
 
     private FileReadingService fileReadingService;

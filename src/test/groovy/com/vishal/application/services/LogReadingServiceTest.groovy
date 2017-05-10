@@ -79,6 +79,10 @@ class LogReadingServiceTest extends Specification {
         Mockito.when(mockSpanOrganisationService.organiseRootSpanAndItsChildren(logLineInfoList)).thenReturn(rootSpan)
 
         Trace trace = Trace.builder().id("traceId1").root(rootSpan).build()
+
+        Mockito.when(mockTraceOrderingService.orderByStartDateOfRootSpan([trace])).thenReturn([trace])
+
+        Mockito.when(mockTraceObjectFactory.createTraceObject("traceId1", rootSpan)).thenReturn(trace)
         def expectedListOfTraces = [trace]
 
         when:
