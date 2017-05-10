@@ -3,7 +3,8 @@ package com.vishal.application.services;
 import com.vishal.application.TraceObjectFactory;
 import com.vishal.application.entity.Span;
 import com.vishal.application.entity.Trace;
-import groovy.util.logging.Slf4j;
+import com.vishal.application.exception.InternalServerError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +36,8 @@ public class LogReadingService {
     }
 
     public List<Trace> buildTraceAndSpan(String logFileName) {
-        List<Trace> resultantTraceList = new ArrayList<>();
         try {
+            List<Trace> resultantTraceList = new ArrayList<>();
             fileReadingService.readFile(logFileName).entrySet()
                     .forEach(traceIdAndLogLineInfoListEntrySet -> {
                         Span root = spanOrganisationService.organiseRootSpanAndItsChildren(traceIdAndLogLineInfoListEntrySet.getValue());
@@ -44,9 +45,9 @@ public class LogReadingService {
                     });
 
             return traceOrderingService.orderByStartDateOfRootSpan(resultantTraceList);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ioException) {
+            log.error("Exception while reading log file with name:{}", logFileName, ioException);
+            throw new InternalServerError(String.format("Exception while reading log file with name:%s", logFileName), ioException);
         }
-        return resultantTraceList;
     }
 }

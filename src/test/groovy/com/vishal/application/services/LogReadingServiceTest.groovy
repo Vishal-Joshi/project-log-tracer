@@ -4,6 +4,7 @@ import com.vishal.application.TraceObjectFactory
 import com.vishal.application.entity.LogLineInfo
 import com.vishal.application.entity.Span
 import com.vishal.application.entity.Trace
+import com.vishal.application.exception.InternalServerError
 import org.joda.time.DateTime
 import org.mockito.Mockito
 import spock.lang.Specification
@@ -186,5 +187,18 @@ class LogReadingServiceTest extends Specification {
         listOfTraces.size() == 2
         listOfTraces[0].id == trace2.id
         listOfTraces[1].id == trace.id
+    }
+
+    def "should raise exception if file reading service failed"() {
+        given:
+        String fileName = "log-traces.txt"
+
+        Mockito.when(mockFileReadingService.readFile(fileName)).thenThrow(IOException)
+
+        when:
+        logReadingService.buildTraceAndSpan(fileName)
+
+        then:
+        thrown(InternalServerError)
     }
 }
