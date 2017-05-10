@@ -49,20 +49,5 @@ public class LogLineInfoOrganisationService {
         return mapOfSpanIdsVsSpan;
     }
 
-    public List<String> orderTraceIdsByEarliestFinishingSpan(Map<String, List<LogLineInfo>> mapOfTraceIdsVsLogLineInfo) {
-        return mapOfTraceIdsVsLogLineInfo
-                .entrySet()
-                .stream()
-                .collect(Collectors.toMap(entrySet -> entrySet.getValue().get(0).getEnd(), Map.Entry::getKey, (traceId1, traceId2) -> {
-                    System.out.println("duplicate key found! "+ traceId1+" -- "+traceId2);
-                    return traceId1;
-                }))
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-    }
-
 }
 
