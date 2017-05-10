@@ -8,7 +8,7 @@ import java.nio.file.Paths
 
 class FileOutputServiceTest extends Specification {
 
-    String basePath = "/tmp/tracer-json-output/"
+    String basePath = "/tmp/tests/"
 
     String fileName = "traceid1.txt"
 
@@ -18,7 +18,7 @@ class FileOutputServiceTest extends Specification {
 
     def cleanup() {
         Files.deleteIfExists(Paths.get(basePath, fileName))
-        Files.deleteIfExists(Paths.get(basePath))
+        Files.delete(Paths.get(basePath))
     }
 
     def "output json content to a file should be successful"() {
