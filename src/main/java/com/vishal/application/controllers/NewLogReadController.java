@@ -2,6 +2,7 @@ package com.vishal.application.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vishal.application.exception.InternalServerError;
 import com.vishal.application.services.LogReadingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class NewLogReadController {
                     try {
                         return objectMapper.writeValueAsString(trace) + "\r\n";
                     } catch (JsonProcessingException jsonProcessingException) {
-                        log.error("Error occurred while making trace json: {}", trace, jsonProcessingException);
-                        return null;
+                        log.error("Error occurred while making trace json: {}", trace.toString(), jsonProcessingException);
+                        throw new InternalServerError("Error occurred while making trace json", jsonProcessingException);
                     }
                 })
                 .reduce("", String::concat)

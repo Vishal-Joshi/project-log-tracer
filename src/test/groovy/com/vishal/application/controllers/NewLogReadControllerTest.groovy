@@ -1,5 +1,6 @@
 package com.vishal.application.controllers
 
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer
 import com.fasterxml.jackson.datatype.joda.ser.JacksonJodaFormat
 import com.vishal.application.entity.Span
 import com.vishal.application.entity.Trace
+import com.vishal.application.exception.InternalServerError
 import com.vishal.application.services.LogReadingService
 import org.joda.time.DateTime
 import org.mockito.Mockito
@@ -29,8 +31,6 @@ class NewLogReadControllerTest extends Specification {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
 
-    NewLogReadController newLogReadController = new NewLogReadController(basePath, mockLogReadingService, objectMapper)
-
     def "should return resultant json string for given file"() {
         given:
         def fileName = "small-log.txt"
@@ -44,12 +44,37 @@ class NewLogReadControllerTest extends Specification {
         Mockito.when(mockLogReadingService.buildTraceAndSpan(basePath + fileName)).thenReturn(traces)
         String traceJsonAsString = objectMapper.writeValueAsString(trace) + "\r\n" + objectMapper.writeValueAsString(trace2) + "\r\n".trim()
 
+        NewLogReadController newLogReadController = new NewLogReadController(basePath, mockLogReadingService, objectMapper)
+
         when:
         def resultantTraceJsonString = newLogReadController.readLogs(fileName)
 
         then:
         resultantTraceJsonString != null
         resultantTraceJsonString == traceJsonAsString
+    }
+
+    def "should return raise exception if json processing failed"() {
+        given:
+        def fileName = "small-log.txt"
+        def now = DateTime.now()
+        def endDate = now.plusSeconds(2)
+        Span rootSpan = Span.builder().service("service1").span("span1").start(now).end(endDate).build()
+        Trace trace = Trace.builder().id("traceId1").root(rootSpan).build()
+        Span rootSpan2 = Span.builder().service("service12").span("span12").start(now).end(endDate).build()
+        Trace trace2 = Trace.builder().id("traceId2").root(rootSpan2).build()
+        def traces = [trace, trace2]
+        Mockito.when(mockLogReadingService.buildTraceAndSpan(basePath + fileName)).thenReturn(traces)
+        ObjectMapper mockObjectMapper = Mockito.mock(ObjectMapper.class)
+        def exception = new JsonProcessingException("error occurred")
+        Mockito.when(mockObjectMapper.writeValueAsString(trace)).thenThrow(exception)
+        NewLogReadController newLogReadController = new NewLogReadController(basePath, mockLogReadingService, mockObjectMapper)
+
+        when:
+        newLogReadController.readLogs(fileName)
+
+        then:
+        thrown(InternalServerError)
     }
 
 
