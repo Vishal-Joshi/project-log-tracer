@@ -18,7 +18,7 @@ import spock.lang.Specification
 /**
  * Created by vishal.joshi on 5/10/17.
  */
-class NewLogReadControllerTest extends Specification {
+class LogReadControllerTest extends Specification {
 
     String basePath = "/base/path"
 
@@ -44,7 +44,7 @@ class NewLogReadControllerTest extends Specification {
         Mockito.when(mockLogReadingService.buildTraceAndSpan(basePath + fileName)).thenReturn(traces)
         String traceJsonAsString = objectMapper.writeValueAsString(trace) + "\r\n" + objectMapper.writeValueAsString(trace2) + "\r\n".trim()
 
-        NewLogReadController newLogReadController = new NewLogReadController(basePath, mockLogReadingService, objectMapper)
+        LogReadController newLogReadController = new LogReadController(basePath, mockLogReadingService, objectMapper)
 
         when:
         def resultantTraceJsonString = newLogReadController.readLogs(fileName)
@@ -68,7 +68,7 @@ class NewLogReadControllerTest extends Specification {
         ObjectMapper mockObjectMapper = Mockito.mock(ObjectMapper.class)
         def exception = new JsonProcessingException("error occurred")
         Mockito.when(mockObjectMapper.writeValueAsString(trace)).thenThrow(exception)
-        NewLogReadController newLogReadController = new NewLogReadController(basePath, mockLogReadingService, mockObjectMapper)
+        LogReadController newLogReadController = new LogReadController(basePath, mockLogReadingService, mockObjectMapper)
 
         when:
         newLogReadController.readLogs(fileName)
