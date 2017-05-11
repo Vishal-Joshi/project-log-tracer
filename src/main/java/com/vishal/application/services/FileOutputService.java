@@ -22,7 +22,7 @@ public class FileOutputService {
 
     public boolean printJson(String jsonAsString, String outputFileName) {
         try {
-            Files.write(Paths.get(basePathForOutputFiles, outputFileName), jsonAsString.getBytes(), StandardOpenOption.CREATE);
+            Files.write(Paths.get(basePathForOutputFiles, outputFileName), jsonAsString.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException ioException) {
             log.error("Error occurred while writing json output", ioException);
             throw new InternalServerError("Error occurred while writing json output", ioException);

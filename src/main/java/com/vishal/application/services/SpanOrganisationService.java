@@ -36,9 +36,12 @@ public class SpanOrganisationService {
 
         //attach children
         mapOfCallerIdsVsSpan.entrySet()
-                .forEach(entrySet -> mapOfSpanIdsVsSpan
-                        .get(entrySet.getKey())
-                        .setCalls(entrySet.getValue()));
+                .forEach(entrySet -> {
+                    Span span = mapOfSpanIdsVsSpan.get(entrySet.getKey());
+                    if (span != null) {
+                        span.setCalls(entrySet.getValue());
+                    }
+                });
         return mapOfCallerIdsVsSpan.get(ApiConstants.TRACE_INITIATOR_SPAN_ID).get(0);
     }
 }

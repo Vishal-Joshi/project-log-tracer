@@ -44,7 +44,7 @@ class LogReadControllerTest extends Specification {
         Mockito.when(mockLogReadingService.buildTraceAndSpan(basePath + fileName)).thenReturn(traces)
         String traceJsonAsString = objectMapper.writeValueAsString(trace) + "\r\n" + objectMapper.writeValueAsString(trace2) + "\r\n".trim()
 
-        LogReadController newLogReadController = new LogReadController(basePath, mockLogReadingService, objectMapper)
+        LogReadController newLogReadController = new LogReadController(basePath, mockLogReadingService, objectMapper, incrementalFileReadingService)
 
         when:
         def resultantTraceJsonString = newLogReadController.readLogs(fileName)
@@ -68,7 +68,7 @@ class LogReadControllerTest extends Specification {
         ObjectMapper mockObjectMapper = Mockito.mock(ObjectMapper.class)
         def exception = new JsonProcessingException("error occurred")
         Mockito.when(mockObjectMapper.writeValueAsString(trace)).thenThrow(exception)
-        LogReadController newLogReadController = new LogReadController(basePath, mockLogReadingService, mockObjectMapper)
+        LogReadController newLogReadController = new LogReadController(basePath, mockLogReadingService, mockObjectMapper, incrementalFileReadingService)
 
         when:
         newLogReadController.readLogs(fileName)
