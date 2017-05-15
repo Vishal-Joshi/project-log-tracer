@@ -10,7 +10,7 @@ Tests - Groovy
 Framework - Spring boot
 Test framework - Spock
 
-#How to run the application
+# How to run the application
 `mvn spring-boot:run`
 
 # Input and output base path
