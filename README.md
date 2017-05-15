@@ -23,4 +23,4 @@ will be generated.
 The currently value for it is **/tmp/tracer-json-output/**. So, please place the log files there.
 
 # Sample request
-curl -X GET 'http://localhost:9002/logtracerapi/readlogs?traceinputlogfilename=medium-log.txt&tracesoutputfilename=medium-traces9.txt'
+`curl -X GET 'http://localhost:9002/logtracerapi/readlogs?traceinputlogfilename=medium-log.txt&tracesoutputfilename=medium-traces9.txt'`
