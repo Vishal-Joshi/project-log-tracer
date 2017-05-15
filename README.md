@@ -5,10 +5,10 @@ This application is intended to read log traces, analyze them and prepare traces
 `mvn clean install`
 
 # Languages and frameworks
-Production code - Java 8
-Tests - Groovy
-Framework - Spring boot
-Test framework - Spock
+* Production code - Java 8
+* Tests - Groovy
+* API Framework - Spring boot
+* Test framework - Spock
 
 # How to run the application
 `mvn spring-boot:run`
