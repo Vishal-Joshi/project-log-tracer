@@ -1,5 +1,6 @@
 package com.vishal.application.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vishal.application.entity.LogLine;
 import com.vishal.application.entity.LogLineInfo;
@@ -43,11 +44,15 @@ public class IncrementalFileReadingService {
     @Value("${base.path}")
     private String inputLogFileBasePath;
 
+    @Autowired
+    private TraceOrderingService traceOrderingService;
+
     public void readFileLineByLine(String inputLogFileName, String outputLogFileName) {
         mapOfTraceIdsVsLogLineInfo = new HashMap<>();
         LineIterator it = null;
         try {
             it = FileUtils.lineIterator(new File(inputLogFileBasePath + inputLogFileName), "UTF-8");
+            DateTime start = DateTime.now();
             try {
                 while (it.hasNext()) {
                     String line = it.nextLine();
@@ -57,20 +62,37 @@ public class IncrementalFileReadingService {
                         logLineInfos.add(logLine.getLogLineInfo());
                         logLineInfos.sort(Comparator.comparing(LogLineInfo::getEnd));
 
-                        LogLineInfo rootLogLineInfo = getRootLogLineInfo(logLineInfos);
-                        if (rootLogLineInfo != null) {
-                            Trace trace = Trace
-                                    .builder()
-                                    .id(logLine.getTrace())
-                                    .root(spanOrganisationService.organiseRootSpanAndItsChildren(logLineInfos))
-                                    .build();
+                        if (start.plusSeconds(1).isBefore(DateTime.now())) {
+                            List<Trace> listOfTraces = new ArrayList<>();
+                            mapOfTraceIdsVsLogLineInfo.forEach((key, logLineInfoList) -> {
+                                LogLineInfo rootLogLineInfo = getRootLogLineInfo(logLineInfoList);
+                                if (rootLogLineInfo != null) {
+                                    Trace trace = Trace
+                                            .builder()
+                                            .id(logLine.getTrace())
+                                            .root(spanOrganisationService.organiseRootSpanAndItsChildren(logLineInfoList))
+                                            .build();
+                                    listOfTraces.add(trace);
+                                }
 
-                            String traceJsonAsString = objectMapper.writeValueAsString(trace);
-                            if (it.hasNext()) {
-                                traceJsonAsString += "\r\n";
-                            }
-                            consoleOutputService.printJson(traceJsonAsString);
-                            fileOutputService.printJson(traceJsonAsString, outputLogFileName);
+                            });
+                            traceOrderingService.orderByStartDateOfRootSpan(listOfTraces);
+
+                            String trimJsonString = listOfTraces.stream().map(trace -> {
+                                try {
+                                    mapOfTraceIdsVsLogLineInfo.remove(trace.getId());
+                                    return objectMapper.writeValueAsString(trace) + "\r\n";
+                                } catch (JsonProcessingException e) {
+                                    e.printStackTrace();
+                                    return null;
+                                }
+                            }).reduce("", String::concat)
+                                    .trim();
+
+                            consoleOutputService.printJson(trimJsonString);
+
+                            fileOutputService.printJson(trimJsonString, outputLogFileName);
+                            start = start.plusSeconds(1);
                         }
 //                        else {
 //                            logLineInfos.sort(Comparator.comparing(LogLineInfo::getStart));
@@ -83,8 +105,8 @@ public class IncrementalFileReadingService {
 //                        }
                     } else {
                         logLineInfos = new ArrayList<>();
+                        mapOfTraceIdsVsLogLineInfo.put(logLine.getTrace(), logLineInfos);
                     }
-                    mapOfTraceIdsVsLogLineInfo.put(logLine.getTrace(), logLineInfos);
                     // do something with line
                 }
             } finally {
