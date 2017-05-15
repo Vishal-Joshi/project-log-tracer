@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-public class NewLogReadController {
+public class LogReadController {
 
     private String basePath;
     private LogReadingService logReadingService;
@@ -24,10 +24,10 @@ public class NewLogReadController {
     private Printer printer;
 
     @Autowired
-    public NewLogReadController(@Value("${base.path}") String basePath,
-                                LogReadingService logReadingService,
-                                ObjectMapper objectMapper,
-                                Printer printer) {
+    public LogReadController(@Value("${base.path}") String basePath,
+                             LogReadingService logReadingService,
+                             ObjectMapper objectMapper,
+                             Printer printer) {
         this.basePath = basePath;
         this.logReadingService = logReadingService;
         this.objectMapper = objectMapper;
