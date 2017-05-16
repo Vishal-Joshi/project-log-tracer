@@ -69,7 +69,7 @@ public class IncrementalFileReadingService {
                                 if (rootLogLineInfo != null) {
                                     Trace trace = Trace
                                             .builder()
-                                            .id(logLine.getTrace())
+                                            .id(key)
                                             .root(spanOrganisationService.organiseRootSpanAndItsChildren(logLineInfoList))
                                             .build();
                                     listOfTraces.add(trace);
@@ -109,6 +109,7 @@ public class IncrementalFileReadingService {
                     }
                     // do something with line
                 }
+                System.out.print("--------------complete!--------------");
             } finally {
                 LineIterator.closeQuietly(it);
             }
